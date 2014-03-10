@@ -4,10 +4,18 @@
 		<meta charset="UTF-8">
 		<title>DragControl - Control Panel</title>
 		<link rel="stylesheet" type="text/css" href="style/main.css">
-		<script>
-			document.addEventListener('DOMContentLoaded', init, false);
-			
+		<script>			
 			function init() {
+				var searchDiv = document.querySelector('#search');
+				for (var i=0; i<SearchEngines.length; i++) {
+					var searchThis = document.createElement('span');
+					searchThis.setAttribute('class', 'droppable search-this');
+					searchThis.setAttribute('style', 'background-image:url("' + SearchEngines[i].iconURL + '"); background-repeat:no-repeat; background-position:center center; background-size:cover;');
+					searchThis.setAttribute('desc', 'Search ' + SearchEngines[i].name);
+					searchThis.setAttribute('searchTemplate', SearchEngines[i].searchTemplate);
+					searchThis.setAttribute('suggestTemplate', SearchEngines[i].suggestTemplate);
+					searchDiv.insertBefore(searchThis, searchDiv.firstChild);
+				}
 				var droppables = document.querySelectorAll('.droppable');
 				[].forEach.call(droppables, function(d, i) {
 					for (var l in eventListeners) {
@@ -17,11 +25,38 @@
 				});
 			}
 			
+			function initFor(what) {
+				switch (what) {
+					case 'link':
+						var show = ['copy','search','open-link'];
+						break;
+					case 'text':
+						var show = ['search'];
+						break;
+					case 'image':
+						var show = ['save-default-folder','save-browse-folder'];
+						break;
+					case 'download':
+						var show = ['save-default-folder','save-browse-folder'];
+						break;
+					default:
+						alert('error unknown init');
+				}
+			}
+			
 			var eventListeners = {
 				dragenter: function(e) {
 					console.log('droppable dragenter e=',e);
 					var d = e.target;
-					d.classList.add('hover');
+					var group = d.parentNode;
+					var droppables = group.querySelectorAll('.droppable');
+					[].forEach.call(droppables, function(d, i) {
+						if (d == e.target) {
+							d.classList.add('hover');
+						} else {
+							d.classList.remove('hover');
+						}
+					});
 				},
 				dragover: function(e) {
 					e.preventDefault();
@@ -29,7 +64,7 @@
 				dragleave: function(e) {
 					console.log('droppable dragleave e=',e);
 					var d = e.target;
-					d.classList.add('hover');
+					//d.classList.remove('hover');
 				},
 				drop: function(e) {
 					console.log('droppable drop e=',e);
@@ -38,66 +73,44 @@
 		</script>
 	</head>
 	<body>
-		<div id="function">
-			Function: 
-			<span>Nothing (Default)</span>
-		</div>
-		<div id="description">
-			description
-		</div>
-		<div id="controls">
-			<div class="group target" desc="Workspace for action to take place in">
-				<span class="droppable">
-					<span class="icon curtab" desc="Current Tab"> </span>
-				</span>
-				<span class="droppable">
-					<span class="icon newtab" desc="New Tab"> </span>
-				</span>
-				<span class="droppable">
-					<span class="icon newwin" desc="New Window"> </span>
-				</span>
+		<div id="wrap">
+			<div id="function">
+				Function: 
+				<span>Nothing (Default)</span>
 			</div>
-			<div class="group target-behavior" desc="Behavior of workspace">
-				<span class="droppable">
-					<span class="icon foreground" desc="New Tab"> </span>
-				</span>
-				<span class="droppable">
-					<span class="icon background" desc="Current Tab"> </span>
-				</span>
+			<div id="description">
+				description
 			</div>
-			<div class="group text">
-				<span class="droppable">
-					<span class="icon search" desc="Search"> </span>
-				</span>
+			<div id="main" class="group">
+				<span class="droppable open-link" desc="Search"> </span>
+				<span class="droppable search" desc="Search"> </span>
+				<span class="droppable copy" desc="Copy Text to Clipboard"> </span>
+				<span class="droppable save-default-folder" desc="Default Folder"> </span>
+				<span class="droppable save-browse-folder" desc="Browse Folders"> </span>
+				<span class="droppable cancel" desc="Cancel - just hovering this should cancel it"> </span>
 			</div>
-			<div class="group link">
-				<span class="droppable">
-					<span class="icon search" desc="Search"> </span>
-				</span>
-				<span class="group droppable">
-					<span class="icon copy" desc="Copy Text to Clipboard"> </span>
-				</span>
+			<div id="target">
+				<div class="group">
+					<hr>
+					<span class="droppable curtab" desc="Current Tab"></span>
+					<span class="droppable newtab hover" desc="New Tab"> </span>
+					<span class="droppable curwin" desc="Current Window"></span>
+					<span class="droppable newwin" desc="New Window"> </span>
+				</div>
+				<div class="group">
+					<hr>
+					<span class="droppable foreground hover" desc="New Tab"> </span>
+					<span class="droppable background" desc="Current Tab"> </span>
+				</div>
 			</div>
-			<div class="group download">
-				<span class="droppable">
-					<span class="icon save-default-folder" desc="Default Folder"> </span>
-				</span>
-				<span class="droppable">
-					<span class="icon save-browse-folder" desc="Browse Folders"> </span>
-				</span>
+			<div id="search" class="group">
+				<!--todo: plan for future version
+				<div id="autocompletion">
+					<hr>
+					autocompletion loads here
+				</div>
+				-->
 			</div>
-			<div class="group image">
-				<span class="droppable">
-					<span class="icon save-default-folder" desc="Default Folder"> </span>
-				</span>
-				<span class="droppable">
-					<span class="icon save-browse-folder" desc="Browse Folders"> </span>
-				</span>
-			</div>
-			<div class="group">
-				<span class="droppable">
-					<span class="icon cancel" desc="Cancel"> </span>
-				</span>
 			</div>
 		</div>
 	</body>

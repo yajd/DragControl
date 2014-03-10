@@ -39,6 +39,16 @@
 body {
 	font-family: "Open Sans",sans-serif;
 	font-size: 14px;
+	padding: 0;
+	margin: 0;
+}
+br {
+	
+}
+#wrap {
+	width: 200px;
+	display: block;
+	background-color: rgba(0,0,0,.02);
 }
 
 #function {
@@ -61,9 +71,10 @@ body {
 	border-radius: 2px;
 	transition-duration: 250ms;
 	transition-property: box-shadow;
+	overflow: hidden;
 }
 
-.droppable > span:before, .droppable >span:after {
+.droppable:before, .droppable:after {
 	position: absolute;
 	font-family:"iconfont-1";
 	text-align: center;
@@ -72,7 +83,7 @@ body {
 	transition-property: box-shadow;
 }
 
-.droppable  > .icon:before {
+.droppable:before {
 	font-size: 16px;
 	bottom: 2px;
 	right: 2px;
@@ -81,8 +92,8 @@ body {
 	color: #bbb;
 }
 
-.droppable > .icon:after {
-	font-size: 32px;
+.droppable:after {
+	font-size: 12px; /*32px;*/
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -90,54 +101,70 @@ body {
 	color: #bbb;
 }
 
-.droppable:hover > .icon:before {
+.droppable.hover:before {
 	color: black;
 }
-.droppable:hover > .icon:after {
+.droppable.hover:after {
 	color: black;
 }
 
-.droppable:hover {
+.droppable.hover {
 	border-color: #ccc;
 	box-shadow: inset 0 0 5px #888;
 }
 
 .curtab:after {
-	content: "\35eb";
+	content: "CurTab";
 	margin-top: 2px;
 }
 .newtab:after {
-	content: "\35eb";
+	content: "NewTab";
 	bottom: 3px;
 	right: 0;
 }
 .newwin:after {
-	content: "\35ec";
+	content: "NewWin";
+	margin-top: 3px;
+}
+.curwin:after {
+	content: "CurWin";
 	margin-top: 3px;
 }
 .foreground:after {
-	content: "\3632";
+	content: "Foreground";
 }
 .background:after {
-	content: "\35e4";
+	content: "Background";
 }
 .search:after {
-	content: "\3632";
+	content: "Search";
+	bottom: 3px;
+	right: 0;
+}
+.open-link:after {
+	content: "Open Link";
 	bottom: 3px;
 	right: 0;
 }
 .copy:after {
-	content: "\356f";
+	content: "Copy Text";
 	margin-top: 1px;
 }
 .save-default-folder:after {
-	content: "\3562";
+	content: "Save to Default Folder";
 	margin-top: 2px;
 }
 .save-browse-folder:after {
-	content: "\3562";
+	content: "Save to Browsed Folder";
+	margin-top: 2px;
+}
+.save-folder:after {
+	content: "Save to this Folder";
 	margin-top: 2px;
 }
 .cancel:after {
-	content: "\35bd";
+	content: "Cancel";
+}
+.search-this:after {
+	content: "Search with This";
 }

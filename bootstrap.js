@@ -70,7 +70,7 @@ dragHandler.prototype.eventListeners = {
 	
 	},
 	dragend: function(e) {
-		this.controlPanel.hidePopup();
+		//this.controlPanel.hidePopup();
 	}
 };
 
@@ -163,6 +163,8 @@ function parseDragStartEvent(evt) {
 	return d;
 }
 
+var SearchEngines = [];
+
 function createControlPanel(win) {
 	var mainPopupSet = win.document.querySelector('#mainPopupSet');
 	if (!mainPopupSet) {
@@ -175,14 +177,32 @@ function createControlPanel(win) {
 		noautohide: true,
 		noautofocus: false,
 		level: 'parent',
-		style: 'padding:15px; margin:0; width:300px; height:300px; background-color:transparent; border:0; -moz-appearance:none !important;'
+		style: 'padding:10px; margin:0; width:340px; height:340px; background-color:transparent; border:0; -moz-appearance:none !important;'
 	}
 	for (var p in props) {
 		panel.setAttribute(p, props[p]);
 	}
 	 
-	var iframe = win.document.createElement('iframe');
-	iframe.setAttribute('style','border:0; background-color:rgba(255,255,255,.95); ;margin:0; padding:0; width:300px; height:300px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3); border-radius:10px;');
+	var iframe = win.document.createElementNS('http://www.w3.org/1999/xhtml', 'iframe');
+	iframe.setAttribute('style','border:0; background-color:rgba(255,255,255,.95); margin:0; padding:10px; width:300px; height:300px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3); border-radius:10px;');
+
+	iframe.addEventListener('DOMContentLoaded', function() {
+		if (SearchEngines.length == 0) {
+			var engines = Services.search.getVisibleEngines();
+			[].forEach.call(engines, function(engine) {
+				SearchEngines.push({
+					name: engine.name,
+					iconURL: engine.iconURI.spec,
+					//searchTemplate: engine.getSubmission('__search_terms__').uri.spec,
+					//suggestTempalte: engine.getSubmission('__search_terms__', 'application/x-suggestions+json').uri.spec
+				});
+			});
+			SearchEngines.reverse();
+		}
+		iframe.contentWindow.wrappedJSObject.SearchEngines = SearchEngines.slice(0);
+		iframe.contentWindow.wrappedJSObject.init();
+	}, false);
+	
 	iframe.setAttribute('src', self.contentPath + 'control-panel/index.htm');
 	panel.appendChild(iframe);
 	 
@@ -196,7 +216,7 @@ function createControlPanel(win) {
 var windowListener = {
 	//DO NOT EDIT HERE
 	onOpenWindow: function (aXULWindow) {
-		// Wait for the window to finish loading
+		// Wait for the  to finish loading
 		let aDOMWindow = aXULWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
 		aDOMWindow.addEventListener("load", function () {
 			aDOMWindow.removeEventListener("load", arguments.callee, false);
