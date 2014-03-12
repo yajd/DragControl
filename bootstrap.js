@@ -54,6 +54,11 @@ dragHandler.prototype.destroy = function() {
 dragHandler.prototype.eventListeners = {
 	dragstart: function(e) {
 		parseDragStartEvent.bind(this, e);
+		gDataset = parseDragStartEvent(evt);
+		if (gDataset == null) {
+			return;
+		}
+		
 		if (this.gBrowser) {
 			this.controlPanel.openPopup(this.gBrowser, 'overlap', 0, 0);
 		} else {
@@ -161,6 +166,13 @@ function parseDragStartEvent(evt) {
 	d['gBrowser'] = this.DOMWin.gBrowser;
 
 	return d;
+}
+
+function isLinkSupported(link) {
+	if (link && link.startsWith('http')) {
+		return true;
+	}
+	return false;
 }
 
 var SearchEngines = [];

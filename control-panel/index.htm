@@ -108,6 +108,9 @@
 						var search = document.querySelector('#search');
 						main.style.display = 'none';
 						search.style.display = 'block';
+					} else if (d.classList.contains('open-link')) {
+						var target = document.querySelector('#target');
+						target.style.display = 'block';
 					}
 				},
 				dragover: function(e) {
