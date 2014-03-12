@@ -5,8 +5,12 @@
 		<title>DragControl - Control Panel</title>
 		<link rel="stylesheet" type="text/css" href="style/main.css">
 		<script>			
-			function init() {
+			var droppables;
+			var groups;
+			var gWhat;
+			function init(what) {
 				var searchDiv = document.querySelector('#search');
+				console.info('SearchEngines',SearchEngines);
 				for (var i=0; i<SearchEngines.length; i++) {
 					var searchThis = document.createElement('span');
 					searchThis.setAttribute('class', 'droppable search-this');
@@ -15,14 +19,29 @@
 					searchThis.setAttribute('searchTemplate', SearchEngines[i].searchTemplate);
 					searchThis.setAttribute('suggestTemplate', SearchEngines[i].suggestTemplate);
 					searchDiv.insertBefore(searchThis, searchDiv.firstChild);
+					console.log('added search engine = ' + SearchEngines[i].name);
 				}
-				var droppables = document.querySelectorAll('.droppable');
+				droppables = document.querySelectorAll('.droppable');
 				[].forEach.call(droppables, function(d, i) {
 					for (var l in eventListeners) {
 						d.addEventListener(l, eventListeners[l], false);
 					}
-					console.log('adding to droppable ' + i);
 				});
+				gWhat = what;
+				initFor(what);
+				document.addEventListener('dragleave', function(e) {
+					if (e.relatedTarget && e.relatedTarget.ownerDocument == document) {
+						console.log('currently over iframe document e=', e);
+						if (e.relatedTarget && e.relatedTarget.nodeName != 'HTML123' && e.relatedTarget.nodeName != 'iframe') {
+							console.log('relatedTarget NOT NULL, NOT HTML123, NOT IFRAME so RETURN relatedTarget.nodeName == ', e.relatedTarget.nodeName);
+							return;
+						} else {
+							console.log('continuing because e.relatedTarget is either null, html123, or iframe, e.relatedTarget.nodeName = ', e.relatedTarget);
+						}
+					}
+					console.log('DRAG LEAVE FROM INDEX.HTM e =',e);
+					initFor(gWhat);
+				}, false);
 			}
 			
 			function initFor(what) {
@@ -42,6 +61,32 @@
 					default:
 						alert('error unknown init');
 				}
+				var mainDroppables = document.querySelectorAll('#main > .droppable');
+				[].forEach.call(mainDroppables, function(d, i) {
+					var dClasses = d.getAttribute('class').split(' ');
+					//console.log(dClasses.join(','))
+					var hideThis = true;
+					for (var i=0; i<dClasses.length; i++) {
+						if (show.indexOf(dClasses[i]) > -1) {
+							hideThis = false;
+							break;
+						}
+					}
+					if (hideThis) {
+						d.style.display = 'none';
+					} else {
+						d.style.display = 'inline-block';
+					}
+				});
+				document.querySelector('#main').style.display = 'block';
+				document.querySelector('#target').style.display = 'none';
+				document.querySelector('#search').style.display = 'none';
+				document.querySelector('#save_custom').style.display = 'none';
+				var hovered = document.querySelector('#main > .hover');
+				if (hovered) {
+					hovered.classList.remove('hover');
+				}
+				console.log('init for done');
 			}
 			
 			var eventListeners = {
@@ -57,6 +102,13 @@
 							d.classList.remove('hover');
 						}
 					});
+					console.log('drag entered on classList = ' + d.getAttribute('class'));
+					if (d.classList.contains('search')) {
+						var main = document.querySelector('#main');
+						var search = document.querySelector('#search');
+						main.style.display = 'none';
+						search.style.display = 'block';
+					}
 				},
 				dragover: function(e) {
 					e.preventDefault();
@@ -89,7 +141,7 @@
 				<span class="droppable save-browse-folder" desc="Browse Folders"> </span>
 				<span class="droppable cancel" desc="Cancel - just hovering this should cancel it"> </span>
 			</div>
-			<div id="target">
+			<div id="target" style="display:none;">
 				<div class="group">
 					<hr>
 					<span class="droppable curtab" desc="Current Tab"></span>
@@ -103,7 +155,7 @@
 					<span class="droppable background" desc="Current Tab"> </span>
 				</div>
 			</div>
-			<div id="search" class="group">
+			<div id="search" class="group" style="display:none;">
 				<!--todo: plan for future version
 				<div id="autocompletion">
 					<hr>
@@ -111,6 +163,8 @@
 				</div>
 				-->
 			</div>
+			<div id="save_custom" class="group" style="display:none;">
+				
 			</div>
 		</div>
 	</body>

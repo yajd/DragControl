@@ -17,7 +17,7 @@ function dragHandler(DOMWin) {
 	if (!this.gBrowser) {
 		this.gBrowser = null;
 	}
-	this.controlPanel = createControlPanel(DOMWin);
+	this.controlPanel = createControlPanel.bind(this, DOMWin)();
 
 	for (var l in this.controlPanelEventListeners) {
 		this.controlPanel.addEventListener(l, this.controlPanelEventListeners[l].bind(this), false);
@@ -200,8 +200,24 @@ function createControlPanel(win) {
 			SearchEngines.reverse();
 		}
 		iframe.contentWindow.wrappedJSObject.SearchEngines = SearchEngines.slice(0);
-		iframe.contentWindow.wrappedJSObject.init();
-	}, false);
+		this.gWhat = 'link';
+		iframe.contentWindow.wrappedJSObject.init(this.gWhat);
+	}.bind(this), false);
+	
+	/*
+	iframe.addEventListener('dragleave', function(e) {
+		if (e.explicitOriginalTarget && e.explicitOriginalTarget.ownerDocument == iframe.contentDocument) {
+			console.warn('drag left iframe but its over iframe doc so RETURN');
+			return;
+		}
+		console.warn('drag left IFRAME', e);
+		if (iframe.contentWindow) {
+			console.warn('mouse left iframe initFor = ' + this.gWhat);
+			iframe.contentWindow.wrappedJSObject.initFor(this.gWhat);
+			console.warn('DONE mouse left iframe initFor = ' + this.gWhat);
+		}
+	}.bind(this), false);
+	*/
 	
 	iframe.setAttribute('src', self.contentPath + 'control-panel/index.htm');
 	panel.appendChild(iframe);
